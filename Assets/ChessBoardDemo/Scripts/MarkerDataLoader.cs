@@ -8,7 +8,7 @@ using UnityEngine;
 
 namespace ChessBoardDemo.Scripts
 {
-    public class Marker : MonoBehaviour
+    public class MarkerDataLoader : MonoBehaviour
     {
         private const string URL =
             "https://raw.githubusercontent.com/KhronosGroup/glTF-Sample-Models/d7a3cc8e51d7c573771ae77a57f16b0662a905c6/2.0/ABeautifulGame/glTF/ABeautifulGame.gltf";
@@ -17,34 +17,33 @@ namespace ChessBoardDemo.Scripts
 
         [SerializeField] private Transform SpawnPoint;
 
-
         private GltfImport gltf;
-
         private string _jsonText;
-        private Vector3 _shift;
+    
 
 
         private async void Start()
         {
             await DownloadJsonAsync();
-            await DownLoadGltf();
-            DataLoaded?.Invoke();
+            await DownloadGltf();
+           
             Debug.LogError("IsDone");
         }
 
-        private async Task DownLoadGltf()
+        private async Task DownloadGltf()
         {
             GltfImport gltfImport = new GltfImport();
             bool success = await gltfImport.LoadGltfJson(_jsonText, new Uri(URL));
-
-            SpawnPoint.position -= _shift;
             await SpawnGeometry(success, gltfImport);
         }
 
         private async Task SpawnGeometry(bool success, GltfImport gltfImport)
         {
             if (success)
+            {
                 await gltfImport.InstantiateMainSceneAsync(SpawnPoint);
+                DataLoaded?.Invoke();
+            }
         }
 
         private async Task DownloadJsonAsync()

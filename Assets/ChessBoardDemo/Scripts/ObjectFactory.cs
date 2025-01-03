@@ -1,24 +1,25 @@
 ﻿using UnityEngine;
+using UnityEngine.Serialization;
 
 namespace ChessBoardDemo.Scripts
 {
     public class ObjectFactory : MonoBehaviour
     {
-        [SerializeField] private Marker _markerPrefab;
+        [FormerlySerializedAs("_markerPrefab")] [SerializeField] private MarkerDataLoader markerDataLoaderPrefab;
 
-        private Marker _markerInstance;
+        private MarkerDataLoader _markerDataLoaderInstance;
 
         public void SpawnMarker(Vector3 pos)
         {
-            if (_markerInstance != null)
+            if (_markerDataLoaderInstance != null)
                 return;
-            _markerInstance = Instantiate(_markerPrefab, pos, Quaternion.identity, transform);
+            _markerDataLoaderInstance = Instantiate(markerDataLoaderPrefab, pos, Quaternion.identity, transform);
         }
 
 
-        public Marker GetMarker()
+        public MarkerDataLoader GetMarker()
         {
-            return _markerInstance;
+            return _markerDataLoaderInstance;
         }
     }
 }

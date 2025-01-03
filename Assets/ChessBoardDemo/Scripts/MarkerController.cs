@@ -17,10 +17,10 @@ namespace ChessBoardDemo.Scripts
 
         private void Start()
         {
+            ChangeMarkerTextBeforeCreation();
+            
             _inputManager.MarkerCreated += ChangeMarkerTextAfterCreation;
             _inputManager.MarkerCreated += AddListenersToMarker;
-           
-            ChangeMarkerTextBeforeCreation();
         }
 
         private void AddListenersToMarker() => 
