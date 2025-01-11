@@ -1,48 +1,44 @@
 using System;
-using System.Collections.Generic;
 using ChessBoardDemo.Scripts;
-using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.XR.ARFoundation;
 
 public class InputManager : MonoBehaviour
 {
-    public event Action MarkerCreated;
-    [SerializeField] private ObjectFactory _objectFactory;
-    [SerializeField] private ARRaycastManager _arRaycastManager;
-    [SerializeField] private Camera _arCamera;
-    private IInput _input;
+  public event Action MarkerCreated;
+  [SerializeField] private ObjectFactory _objectFactory;
+  [SerializeField] private Camera _arCamera;
+  private IInput _input;
 
-    private void Awake()
-    {
+  public LayerMask LayerMask;
+
+  private void Awake()
+  {
 #if UNITY_EDITOR
-        _input = new MouseInput();
+    _input = new MouseInput();
 #endif
-    }
+  }
 
-    void Update()
+  void Update()
+  {
+    if (_input.IsPressed())
+      DrawRaycast();
+  }
+
+  private void DrawRaycast()
+  {
+    RaycastHit hit;
+
+    Ray ray = _arCamera.ScreenPointToRay(_input.GetInteractionPos());
+    if (Physics.Raycast(ray, out hit, 50f, LayerMask))
     {
-        if (_input.IsPressed())
-            DrawRaycast();
+      _objectFactory.SpawnMarker(hit.point);
+      MarkerCreated?.Invoke();
+      Debug.Log("hit");
     }
-
-    private void DrawRaycast()
+    else
     {
-        List<ARRaycastHit> hitResults = new List<ARRaycastHit>();
-        Ray ray = _arCamera.ScreenPointToRay(_input.GetInteractionPos());
-
-        if (_arRaycastManager.Raycast(ray, hitResults))
-        {
-            foreach (var hit in hitResults)
-            {
-                _objectFactory.SpawnMarker(hit.pose.position);
-                MarkerCreated?.Invoke();
-            }
-        }
-        else
-        {
-            Debug.Log("Not hit");
-            Debug.DrawRay(ray.origin, ray.direction * 100000, Color.red);
-        }
+      Debug.Log("not hit");
     }
+  }
 }
